@@ -26,22 +26,20 @@ configuration:
                      a platform, just include it in the the deny_platforms list. Valid values are 
                      Windows, Mac and Linux."    
         
-    template_rendered_image:
-        type: template
-        description: A references to a template which locates rendered image sequences on disk.
-        fields: context, *
-        allows_empty: True
-    template_sg_publish_name:
-        type: template
-        description: The template used to populate the publish entity name in Shotgun.
-        fields: context, *
-        allows_empty: True
-    template_sg_publish_comment:
-        type: template
-        description: The template used to populate the publish entity comment in Shotgun.
-        fields: context, *
-        allows_empty: True
-        
+    publishes:
+        type: list
+        allows_empty: False
+        values:
+            type: dict
+        default_value:
+            - template_publish_file: shot_render_output
+              template_publish_name: rendered_image_publish_name
+              template_publish_comment: rendered_image_publish_comment
+              published_file_type: 'Rendered Image'
+            - template_publish_file: shot_plate_output
+              template_publish_name: plate_publish_name
+              template_publish_comment: plate_publish_comment
+            
 
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
