@@ -39,7 +39,7 @@ configuration:
             - template_publish_file: shot_plate_output
               template_publish_name: plate_publish_name
               template_publish_comment: plate_publish_comment
-            
+              published_file_type: 'Rendered Image'
 
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
