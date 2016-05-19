@@ -170,8 +170,23 @@ class PublishRenders(Application):
             entity = self.tank.shotgun.find_one(entity_type,[['id','is',entity_id]],['id','code'])
             entity_names.append(entity['code'])
 
-        paths = []
+        output_paths = []
         for entity_name in entity_names:
-                paths += self.tank.abstract_paths_from_template(template, {entity_type:entity_name})
-        paths.sort()
-        return paths
+                # Do this because abstract_paths_from_template() returns results if the path exists but not the file.
+                paths = self.tank.paths_from_template(template, {entity_type:entity_name})
+                for path in paths:
+                    # Get fields for each result to search validated fields.
+                    path_fields = template.get_fields(path)
+                    # Remove abstract fields from path_fields so we only get the number of results we want.
+                    for key in template.keys:
+                        if template.keys[key].is_abstract:
+                            path_fields.pop(key,None)
+                    
+                    abstract_paths = self.tank.abstract_paths_from_template(template, path_fields)
+                    # If abstract path is already in output list then we skip it.
+                    for abstract_path in abstract_paths:
+                        if not abstract_path in output_paths:
+                            output_paths += [abstract_path]
+
+        output_paths.sort()
+        return output_paths
