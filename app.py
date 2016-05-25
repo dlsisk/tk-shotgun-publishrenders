@@ -3,6 +3,7 @@
 App that creates published file entities from image sequences on disk, from inside of Shotgun.
 
 """
+import os
 import sgtk
 import tank
 from tank.platform import Application
@@ -120,6 +121,8 @@ class PublishRenders(Application):
                         entities_skipped += 1
                     else:
                         fields = template['publish_file'].get_fields(path)
+                        if not 'file_ext' in fields:
+                            fields['file_ext'] = os.path.splitext(path)[1][1:]
                             
                         # construct kwargs for registration.
                         try:
@@ -181,12 +184,10 @@ class PublishRenders(Application):
                     for key in template.keys:
                         if template.keys[key].is_abstract:
                             path_fields.pop(key,None)
-                    
-                    abstract_paths = self.tank.abstract_paths_from_template(template, path_fields)
+                    abstract_path = template.apply_fields(path_fields)
                     # If abstract path is already in output list then we skip it.
-                    for abstract_path in abstract_paths:
-                        if not abstract_path in output_paths:
-                            output_paths += [abstract_path]
+                    if not abstract_path in output_paths:
+                        output_paths += [abstract_path]
 
         output_paths.sort()
         return output_paths
